@@ -3,7 +3,9 @@
 #RAMOS ORDOÑEZ PEDRO FRANCISCO                  1870149
 #SALDAÑA RODRÍGUEZ DANIEL ISAI                  1604155
 #TORRES PASILLAS ROGELIO                        1820938
-
+###############################################NOTA EN EL ARCHIVO PDF DICE QUE SOLO 5 ESTUDIANTES SE LLENARAN###########################
+###########PERO EN REALIDAD ES 30, FUE UN ERROR YA QUE SE NOS OLVIDO CAMBIARLO, PERO AQUI EN EL RESPOSITORIO ESTA CORRECTAMENTE#########
+#############################################################GRACIAS###################################################################
 import pandas as pd
 import time
 import os
@@ -42,7 +44,7 @@ class Menu:
             self.nombre_alumnos = list()
                     
                     
-            for i in range(5):
+            for i in range(30):
                 while True:
                     nombre = input(f"Nombre del alumno {i+1}")
                 
