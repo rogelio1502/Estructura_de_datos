@@ -1,4 +1,9 @@
-##Tarea 30 abril 2020 , Estructura de Datos
+#Tarea 30 abril 2020 , Estructura de Datos
+#COSS ESCOBEDO MIRIAM                           1845198
+#RAMOS ORDOÑEZ PEDRO FRANCISCO                  1870149
+#SALDAÑA RODRÍGUEZ DANIEL ISAI                  1604155
+#TORRES PASILLAS ROGELIO                        1820938
+
 import pandas as pd
 import time
 import os
@@ -31,28 +36,41 @@ class Menu:
         if cont==0:
             
             try:
-                self.data_alumnos = pd.read_csv("alumnos.csv",index_col=0)
+                self.nombre_archivo= input("Nombre del archivo csv sin terminacion")
+                self.data_alumnos = pd.read_csv(f"{self.nombre_archivo}.csv",index_col=0)
                 print("Cargando Archivo con origen en el ordenador.")
                 self.calificaciones = list()
                 print("Archivo Cargado")
                 for i in self.data_alumnos.columns:
                     self.calificaciones.append(i)
-                
+                self.cuantos = 0
+                for i in self.data_alumnos.index:
+                    self.cuantos = self.cuantos + 1
                 cont=cont+1
                 print("Volviendo al Menu")
                 time.sleep(5)
             
             except:
+                
                 alumnos=dict()
                 print("No se encontro un archivo de origen, se procedera a crear uno")
-                for i in range(3):
-                    alumnos[i+1]=[0,0,0,0,0,0]
+                self.nombre_archivo = input("Nombre del archivo sin terminacion CSV")
+                while True:
+                    
+                    self.cuantos = (input("Cuantos alumnos desea agregar?"))
+                    if self.cuantos.isdigit():
+                        self.cuantos=int(self.cuantos)
+                        break
+                    else:
+                        print("No se permiten valores de tipo String, solo numeros")
+                for i in range(self.cuantos):
+                    alumnos[i+1]=[0,0,0,0,0]
             
-                self.calificaciones = ["Programacion","Contabilidad","Base de Datos","Ingles","Redes","Promedio"]
+                self.calificaciones = ["Programacion","Contabilidad","Base de Datos","Ingles","Redes"]
                 _data_alumnos = pd.DataFrame(alumnos)
                 _data_alumnos.index = [self.calificaciones]
     
-                _data_alumnos.T.to_csv(r"alumnos.csv",index=True,header=True)
+                _data_alumnos.T.to_csv(f"{self.nombre_archivo}.csv",index=True,header=True)
                 self.data_alumnos = _data_alumnos.T
                 _data_alumnos=None
                 print("Archivo cargado")
@@ -60,76 +78,96 @@ class Menu:
                 print("Volviendo al Menu")
                 time.sleep(5)
         else:
-            print("Ya tiene el archivo cargado, sir")
+            print("Ya tiene el archivo cargado.")
             print("Volviendo al Menu")
             time.sleep(5)
    
     def capturarCalificaciones(self):
         os.system("cls")
-        try:
-            for i in self.data_alumnos.index:
-                os.system("cls")
-                _calificaciones = list()
-                for y in range(len(self.calificaciones)-1):
+        var = True
+        while var==True:
+            continuar = input("Aviso: los registros que se tienen hasta ahora se inicializaran en 0, Desea continuar? y/n")
+            if continuar == "y" or continuar == "Y":
+                
+            
+                
+                try:
+                    print("Iniciando los valores en 0")
+                    self.data_alumnos[0:self.cuantos]=0
+                    print(self.data_alumnos)
+                    for i in self.data_alumnos.index:
+                        os.system("cls")
+                        _calificaciones = list()
+                        for y in range(len(self.calificaciones)):
+                            while True:
+                                print(f"Calificacion del alumno {i} en {self.calificaciones[y]}")
+                                cal = input()
+                                if cal.isdigit():
+                                    cal=int(cal)
+                                    if cal >= 0 and cal<=100:
+
+                                        _calificaciones.append(cal)
+                                        break
+                                    else:
+                                        print("La calificacion debe ser mayor igual a 0 o menor igual a 100")
+                                else:
+                                    print("No se permiten valores de tipo String")
+                
+                        self.data_alumnos.loc[i]=_calificaciones
+                        _calificaciones = None
+                    print("Vista Previa")
+                    print(self.data_alumnos)
                     while True:
-                        print(f"Calificacion del alumno {i} en {self.calificaciones[y]}")
-                        cal = input()
-                        if cal.isdigit():
-                            cal=int(cal)
-                            if cal >= 0 and cal<=100:
-
-                                _calificaciones.append(cal)
-                                break
-                            else:
-                                print("La calificacion debe ser mayor igual a 0 o menor igual a 100")
+                        answer = input("Desea guardar los cambios? y/n")
+                        if answer == "y" or answer == "Y":
+                            self.data_alumnos.to_csv(f'{self.nombre_archivo}.csv',index=True,header=True)
+                            self.data_alumnos = pd.read_csv(f'{self.nombre_archivo}.csv',index_col=0)
+                            print("Cambios guardados con exito")
+                            print("Redirigiendose al menu")
+                            time.sleep(5)
+                            var = False
+                            break
+                        elif answer == "n" or answer == "N":
+                            print("No se han guardado los datos")
+                            print("Volviendo al Menu Principal")
+                            time.sleep(5)
+                            var = False
+                            break
                         else:
-                            print("No se permiten valores de tipo String")
-                _calificaciones.append(0)
-                self.data_alumnos.loc[i]=_calificaciones
-                _calificaciones = None
-            self.data_alumnos['Promedio'] = self.data_alumnos.mean(axis=1)
-            while True:
-                answer = input("Desea guardar los cambios? y/n")
-                if answer == "y" or answer == "Y":
-                    self.data_alumnos.to_csv(r'alumnos.csv',index=True,header=True)
-                    del(self.data_alumnos)
-                    self.data_alumnos = pd.read_csv('alumnos.csv',index_col=0)
-                    print("Cambios guardados con exito")
-                    print("Redirigiendose al menu")
-                    time.sleep(5)
-                    break
-                elif answer == "n" or answer == "N":
-                    print("No se han guardado los datos")
-                    print("Volviendo al Menu Principal")
-                    time.sleep(5)
-                    break
-                else:
-                    continue
-        except:
-            while True:
-                print("No se  ha cargado ningun archivo")
-                print("Desea cargar uno? y/n")
-                answer = input()
-                if answer == "y" or answer == "Y":
-                    self.cargarLista()
-                    break
-                elif answer == "n" or answer == "N":
-                    print("Volviendo al menu")
-                    time.sleep(5)
-                    break
-                else:
-                    print("Opcion no valida")
-
+                            continue
+                except:
+                    while True:
+                        print("No se  ha cargado ningun archivo")
+                        print("Desea cargar uno? y/n")
+                        answer = input()
+                        if answer == "y" or answer == "Y":
+                            self.cargarLista()
+                            var = False
+                            break
+                        elif answer == "n" or answer == "N":
+                            print("Volviendo al menu")
+                            time.sleep(5)
+                            var = False
+                            break
+                        else:
+                            print("Opcion no valida")
+            elif continuar == "n" or continuar == "N":
+                var = False
+            else:
+                print("Opcion no valida")
     def mostrarCalificaciones(self):
         os.system("cls")
         try:
             df = self.data_alumnos
             print("---------------Listado completo de calificaciones------------------")
-            print(self.data_alumnos)
+            self.dict_alumnos = self.data_alumnos.to_dict()
+            self.promedio_alumnos = pd.DataFrame(self.dict_alumnos)
+            self.promedio_alumnos['Promedio'] = self.promedio_alumnos.mean(axis=1)
+            print(self.promedio_alumnos)
             time.sleep(2)
         
             print("------------------Promedio general de las asignaturas------------------")
-            self.copy_data_alumnos=self.data_alumnos.to_dict()
+            self.copy_data_alumnos=self.promedio_alumnos.to_dict()
             del self.copy_data_alumnos['Promedio']
             self._materias_frame=pd.DataFrame(self.copy_data_alumnos)
             
