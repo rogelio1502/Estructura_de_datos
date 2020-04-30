@@ -42,7 +42,7 @@ class Menu:
             self.nombre_alumnos = list()
                     
                     
-            for i in range(30):
+            for i in range(5):
                 while True:
                     nombre = input(f"Nombre del alumno {i+1}")
                 
@@ -158,7 +158,15 @@ class Menu:
             print("------------Alumnos con calificacion menor a 7---------------------")
             df_filter=self.promedio_alumnos[self.promedio_alumnos['Promedio'] < 7]
             print(df_filter)
-                
+            
+            
+            print("-------------------5 alumnos con peor calificacion-------------------")
+            df_menores = self.promedio_alumnos.sort_values(by="Promedio")
+            print(df_menores.head(5))
+            print("-------------------5 alumnos con mejor calificacion-------------------")
+            df_mejores = self.promedio_alumnos.sort_values(by="Promedio")
+            print(df_mejores.tail(5))
+            
             print("------------------Promedio general de las asignaturas------------------")
             self.copy_data_alumnos=self.promedio_alumnos.to_dict()
             del self.copy_data_alumnos['Promedio']
