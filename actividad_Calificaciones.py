@@ -42,7 +42,7 @@ class Menu:
             self.nombre_alumnos = list()
                     
                     
-            for i in range(5):
+            for i in range(30):
                 while True:
                     nombre = input(f"Nombre del alumno {i+1}")
                 
