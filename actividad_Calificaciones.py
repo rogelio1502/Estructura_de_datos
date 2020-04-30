@@ -35,48 +35,38 @@ class Menu:
         global cont
         if cont==0:
             
-            try:
-                self.nombre_archivo= input("Nombre del archivo csv sin terminacion")
-                self.data_alumnos = pd.read_csv(f"{self.nombre_archivo}.csv",index_col=0)
-                print("Cargando Archivo con origen en el ordenador.")
-                self.calificaciones = list()
-                print("Archivo Cargado")
-                for i in self.data_alumnos.columns:
-                    self.calificaciones.append(i)
-                self.cuantos = 0
-                for i in self.data_alumnos.index:
-                    self.cuantos = self.cuantos + 1
-                cont=cont+1
-                print("Volviendo al Menu")
-                time.sleep(5)
             
-            except:
+            alumnos=dict()
                 
-                alumnos=dict()
-                print("No se encontro un archivo de origen, se procedera a crear uno")
-                self.nombre_archivo = input("Nombre del archivo sin terminacion CSV")
-                while True:
+            self.nombre_archivo = input("Nombre del archivo sin terminacion CSV")
+            self.nombre_alumnos = list()
                     
-                    self.cuantos = (input("Cuantos alumnos desea agregar?"))
-                    if self.cuantos.isdigit():
-                        self.cuantos=int(self.cuantos)
-                        break
+                    
+            for i in range(5):
+                while True:
+                    nombre = input(f"Nombre del alumno {i+1}")
+                
+                        
+                    if nombre in self.nombre_alumnos:
+                        print("Nombre ya existe, no puede haber dos alumnos iguales, al menos en este programa")
+                        
                     else:
-                        print("No se permiten valores de tipo String, solo numeros")
-                for i in range(self.cuantos):
-                    alumnos[i+1]=[0,0,0,0,0]
+                        alumnos[nombre]=[0,0,0,0,0]
+                        self.nombre_alumnos.append(nombre)
+                        break
+                    
             
-                self.calificaciones = ["Programacion","Contabilidad","Base de Datos","Ingles","Redes"]
-                _data_alumnos = pd.DataFrame(alumnos)
-                _data_alumnos.index = [self.calificaciones]
+            self.calificaciones = ["Programacion","Contabilidad","Base de Datos","Ingles","Redes"]
+            _data_alumnos = pd.DataFrame(alumnos)
+            _data_alumnos.index = [self.calificaciones]
     
-                _data_alumnos.T.to_csv(f"{self.nombre_archivo}.csv",index=True,header=True)
-                self.data_alumnos = _data_alumnos.T
-                _data_alumnos=None
-                print("Archivo cargado")
-                cont=cont+1
-                print("Volviendo al Menu")
-                time.sleep(5)
+            _data_alumnos.T.to_csv(f"{self.nombre_archivo}.csv",index=True,header=True)
+            self.data_alumnos = _data_alumnos.T
+            _data_alumnos=None
+            print("Archivo cargado")
+            cont=cont+1
+            print("Volviendo al Menu")
+            time.sleep(5)
         else:
             print("Ya tiene el archivo cargado.")
             print("Volviendo al Menu")
@@ -93,7 +83,7 @@ class Menu:
                 
                 try:
                     print("Iniciando los valores en 0")
-                    self.data_alumnos[0:self.cuantos]=0
+                    self.data_alumnos[self.nombre_alumnos[0]:self.nombre_alumnos[-1]]=0
                     print(self.data_alumnos)
                     for i in self.data_alumnos.index:
                         os.system("cls")
@@ -165,7 +155,10 @@ class Menu:
             self.promedio_alumnos['Promedio'] = self.promedio_alumnos.mean(axis=1)
             print(self.promedio_alumnos)
             time.sleep(2)
-        
+            print("------------Alumnos con calificacion menor a 7---------------------")
+            df_filter=self.promedio_alumnos[self.promedio_alumnos['Promedio'] < 7]
+            print(df_filter)
+                
             print("------------------Promedio general de las asignaturas------------------")
             self.copy_data_alumnos=self.promedio_alumnos.to_dict()
             del self.copy_data_alumnos['Promedio']
