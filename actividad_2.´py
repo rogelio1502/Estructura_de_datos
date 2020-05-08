@@ -1,0 +1,422 @@
+import pandas as pd
+import random as rd
+import os 
+import time 
+from sys import exit
+import sys
+import io
+class Menu:
+    def __init__(self):
+        while True:
+            print("Seleccione una opción \n1)Cargar Lista \n2)Capturar/Editar Calificaciones \n3)Mostrar Calificaciones \n4)Salir")
+            desicion = input("Opcion: ")
+            if desicion.isdigit():
+                desicion = int(desicion)
+                if desicion == 1:
+                    print("Cargar lista")
+                    self.cargar_lista()
+                elif desicion == 2:
+                    print("Capturar Calificaciones")
+                    self.capturar_calificaciones()
+                elif desicion == 3:
+                    print("Mostrar Calificaciones")
+                    self.mostrar_calificaciones()
+                elif desicion == 4:
+                    print("Salir")
+                    exit()
+                else:
+                    print("Opcion no existe")
+            else:
+                print("No se aceptan caracteres diferentes a la caracteristica numerico")
+    def cargar_lista(self):
+        while True:
+            print("1) Cargar Archivo \n2) Crear Archivo \n3) Volver \n")
+            desicion1 = input()
+            if desicion1.isdigit():
+                desicion1 = int(desicion1)
+                if desicion1 == 1:
+                    while True:
+                        try:
+                            desicion2 = int(input("1)Cargar JSON  2)Cargar CSV 3) Volver \n"))
+                            if desicion2 == 1 or desicion2 == 2:
+                                
+                                self.nombre_archivo = input("Nombre del archivo que desea cargar \n")
+                                if desicion2 == 1:
+                                    try:
+                                        self.data_frame_cargado = pd.read_json(f"{self.nombre_archivo}.json",orient="table")
+                                        self.data_alumnos=self.data_frame_cargado
+                                        self.nombre_alumnos=list()
+                                        self.asignaturas = list()
+                                        for i in self.data_alumnos.index:
+                                            self.nombre_alumnos.append(i)
+                                        for i in self.data_alumnos.columns:
+                                            self.asignaturas.append(i)
+                                        print("Archivo Cargado")
+                                    except:
+                                        print("Error: Archivo no encontrado o no es apto para su conversion a DF")
+                                    
+                                elif desicion2 == 2:
+                                    try:
+                                
+                                        self.data_frame_cargado = pd.read_csv(f"{self.nombre_archivo}.csv",index_col=0)
+                                        self.data_alumnos=self.data_frame_cargado
+                                        self.nombre_alumnos=list()
+                                        self.asignaturas = list()
+                                        for i in self.data_alumnos.index:
+                                            self.nombre_alumnos.append(i)
+                                        for i in self.data_alumnos.columns:
+                                            self.asignaturas.append(i)
+                                        
+                                        print("Archivo Cargado")
+                                    except:
+                                        print("Error: Archivo no encontrado o no es apto para su conversion a DF")
+                            elif desicion2 == 3:
+                                break
+                        except:
+                            print("Valor no admitido")
+                        
+                            
+                                    
+                                        
+                            
+                elif desicion1 == 2:
+                    print("Se creara un archivo con terminacion csv por defecto, sera posible convertirlo a Json en su \nopcion correspondiente")
+                    alumnos=dict()
+                    
+                    self.nombre_archivo = input("Nombre del archivo sin terminacion CSV \n")
+                    self.nombre_alumnos = list()
+                    self.asignaturas = list()
+                    print("Vaciado de datos")
+                    con0 = 0
+                    seguir=True
+                    while seguir == True:
+                        while True:
+                            con0 = con0 + 1
+                            asignatura_name = input(f"Nombre de la materia {con0} \n")
+                            if asignatura_name in self.asignaturas:
+                                print("Materia ya registrada, no puede haber dos iguales, al menos en este programa")
+                            else:
+                               
+                                self.asignaturas.append(asignatura_name)
+                                break
+                        while True:
+                                
+                            print("Desea agregar otra materia? y/n \n")
+                            add = input()
+                            if add == "y" or add == "Y":
+                                break
+                            elif add == "n" or add == "N":
+                                    
+                                seguir = False
+                                break
+                            else:
+                                print("Opcion no valida")
+                        if seguir == False:
+                            break
+                    materias = len(self.asignaturas)
+                    con0 = 0
+                    seguir = True
+                    while seguir == True:
+                        
+                        
+                        while True:
+                            con0 = con0 + 1
+                            nombre = input(f"Nombre del alumno {con0} \n")
+                            if nombre in self.nombre_alumnos:
+                                print("Nombre ya existe, no puede haber dos alumnos iguales, al menos en este programa")
+                            else:
+                                self.ceros = list()
+                                for i in range(materias):   
+                                    self.ceros.append(0) 
+                                alumnos[nombre]=self.ceros
+                                self.nombre_alumnos.append(nombre)
+                                break
+                        while True:
+                                
+                            print("Desea agregar otro alumno? y/n \n")
+                            add = input()
+                            if add == "y" or add == "Y":
+                                break
+                            elif add == "n" or add == "N":
+                                    
+                                seguir = False
+                                break
+                            else:
+                                print("Opcion no valida")
+                        if seguir == False:
+                            break
+
+                    #print(alumnos)
+                    _data_alumnos = pd.DataFrame(alumnos)
+                    del alumnos
+                    
+                    _data_alumnos.index = [self.asignaturas]
+    
+                    _data_alumnos.T.to_csv(f"{self.nombre_archivo}.csv",index=True,header=True)
+                    self.data_alumnos = _data_alumnos.T
+                    del _data_alumnos
+                    print("Archivo creado")
+                    print("Ya puede cargarlo en memoria")
+                    time.sleep(5)
+                    print(self.data_alumnos)
+                    
+                   
+                elif desicion1 == 3:
+                    break
+                
+    def capturar_calificaciones(self):
+        var = True
+        while var==True:
+            continuar = input("Aviso: los registros que se tienen hasta ahora se sobrescribiran, Desea continuar? y/n \n")
+            if continuar == "y" or continuar == "Y":
+                try:
+                    print("Iniciando los valores en 0")
+                    
+                    print(self.data_alumnos)
+                    for i in self.data_alumnos.index:
+                        os.system("cls")
+                        _calificaciones = list()
+                        for y in range(len(self.asignaturas)):
+                            while True:
+                                print(f"Calificacion del alumno {i} en {self.asignaturas[y]}")
+                                cal = input()
+                                if cal.isdigit():
+                                    cal=int(cal)
+                                    if cal >= 0 and cal<=100:
+
+                                        _calificaciones.append(cal)
+                                        break
+                                    else:
+                                        print("La calificacion debe ser mayor igual a 0 o menor igual a 100")
+                                else:
+                                    print("No se permiten valores de tipo String")
+                
+                        self.data_alumnos.loc[i]=_calificaciones
+                        _calificaciones = None
+                    print("Vista Previa")
+                    print(self.data_alumnos)
+                    while True:
+                        answer = input("Desea guardar los cambios? y/n \n")
+                        if answer == "y" or answer == "Y":
+                            while True:
+                                
+                                try:
+                                
+                                    print("Elija el formato 1) CSV 2) JSON 3)Cancelar \n")
+                                    formato = int(input())
+                                except:
+                                    print("Valor ingresado no valido")
+                                else:
+                                    _nombre_archivo = input("Nombre que desea darle al archivo \n")
+                        
+                                    if formato == 1:
+                                        print("Guardando Archivo en formato CSV")
+                                        try:
+                                            self.data_alumnos.to_csv(f"{_nombre_archivo}.csv",index=True,header=True)
+                                        except:
+                                            print(f"Se produjo el siguiente error : {sys.exc_info()[0]}")
+                                        
+                                        else:
+                                            print("Guardado con exito.")
+                                        finally:
+                                            print("Redirigiendo al menu")
+                                            break
+                                        
+                                    elif formato == 2:
+                                        print("Guardando Archivo en formato JSON")
+                                        try:
+                                            self.data_alumnos.to_json(f"{_nombre_archivo}.json",orient="table")
+                                        except:
+                                            print(f"Se produjo el siguiente error : {sys.exc_info()[0]}")
+                                            
+                                        else:
+                                            print("Guardado con exito.")
+                                            
+                                        finally:
+                                            print("Redirigiendo al menu")
+                                            break
+                                    elif formato == 3:
+                                        break
+                                    else:
+                                        print("Opcion no existe")
+                            print("Redirigiendose al menu")
+                            time.sleep(5)
+                            var = False
+                            break
+                        elif answer == "n" or answer == "N":
+                            print("No se han guardado los datos en el equipo.")
+                            print("Volviendo al Menu Principal.")
+                            time.sleep(5)
+                            var = False
+                            break
+                        else:
+                            continue
+                except:
+                    while True:
+                        print("No se  ha cargado ningun archivo")
+                        print("Desea cargar uno? y/n \n")
+                        answer = input()
+                        if answer == "y" or answer == "Y":
+                            self.cargar_lista()
+                            var = False
+                            break
+                        elif answer == "n" or answer == "N":
+                            print("Volviendo al menu")
+                            time.sleep(5)
+                            var = False
+                            break
+                        else:
+                            print("Opcion no valida")
+                
+                    
+            elif continuar == "n" or continuar == "N":
+                var = False
+            else:
+                print("Opcion no valida")
+    def mostrar_calificaciones(self):
+        try:
+            
+            df = self.data_alumnos
+            texto1="---------------Listado completo de calificaciones------------------"#
+            print(texto1)
+            self.dict_alumnos = self.data_alumnos.to_dict()
+            self.promedio_alumnos = pd.DataFrame(self.dict_alumnos)
+            self.promedio_alumnos['Promedio'] = self.promedio_alumnos.mean(axis=1)
+            print(self.promedio_alumnos)
+            self.df_=self.promedio_alumnos.to_string()
+            time.sleep(2)
+            
+            
+            texto2="-------------------5 alumnos con peor calificacion-------------------"#
+            print(texto2)
+            df_menores = self.promedio_alumnos.sort_values(by="Promedio")
+            self.df_1=df_menores.head(5).to_string()
+            print(df_menores.head(5))
+            
+            texto3="-------------------5 alumnos con mejor calificacion-------------------"#
+            print(texto3)
+            df_mejores = self.promedio_alumnos.sort_values(by="Promedio")
+            self.df_2 = df_mejores.tail(5).to_string()
+            print(df_mejores.tail(5))
+            
+            texto4="------------------Promedio general de las asignaturas------------------"#
+            print(texto4)
+            self.copy_data_alumnos=self.promedio_alumnos.to_dict()
+            del self.copy_data_alumnos['Promedio']
+            self._materias_frame=pd.DataFrame(self.copy_data_alumnos)
+            
+        
+            self.materias_frame=self._materias_frame.T
+            self.materias_frame["Promedio General"]=self.materias_frame.mean(axis=1)
+            
+            
+            self.materias_frame=self.materias_frame.sort_values(by="Promedio General")
+            self.df_3 = self.materias_frame['Promedio General'].to_string()
+            print(self.materias_frame['Promedio General'])
+            time.sleep(2)
+            
+            texto5="------------Alumnos con mas de 2 materias reprobadas---------------"#
+            print(texto5)
+            lista_conteo = list()
+            
+            for i in self.data_alumnos.index:
+                conteo=0
+                for y in range(len(self.asignaturas)):
+                    if self.data_alumnos.loc[i][self.asignaturas[y]] < 70:
+                        conteo=conteo+1
+                        
+                lista_conteo.append(conteo)
+            texto6="Nombre de alumnos con mas de dos materias reprobadas"#
+            print(texto6)
+            self.alumnos_reprobados_2 = list()
+            print(len(lista_conteo))
+            for i in range(len(lista_conteo)):
+                
+                if lista_conteo[i] >= 2:
+                    
+                    print(self.data_alumnos.index[i])
+                    self.alumnos_reprobados_2.append(self.data_alumnos.index[i])
+                    
+            
+            self.df_4 = self.data_alumnos.to_string()
+            print(self.data_alumnos)
+            
+            texto7 = "------------Alumnos con calificacion menor a 7---------------------"#
+            print(texto7)
+            df_filter=self.promedio_alumnos[self.promedio_alumnos['Promedio'] < 70]
+            self.df_5 = df_filter.to_string()
+            print(df_filter)
+            texto8 = "------------Alumnos con calificacion mayor a 7---------------------"
+            print(texto8)
+            df_filter=self.promedio_alumnos[self.promedio_alumnos['Promedio'] > 70]
+            self.df_6 = df_filter.to_string()
+            print(df_filter)
+            
+            
+            while True:
+                desicion=input("Desea exportar los resultados en un documento tipo txt? y/n \n ")
+                
+                if desicion == "y" or desicion == "Y":
+                    try:
+                        nombre = input("Nombre del archivo: \n")
+                        file = open(f"{nombre}.txt","w")
+                        file.write(texto1)
+                        file.write("\n")
+                        file.write(self.df_)
+                        file.write("\n")
+                        file.write(texto2)
+                        file.write("\n")
+                        file.write(self.df_1)
+                        file.write("\n")
+                        file.write(texto3)
+                        file.write("\n")
+                        file.write(self.df_2)
+                        file.write("\n")
+                        file.write(texto4)
+                        file.write("\n")
+                        file.write(self.df_3)
+                        file.write("\n")
+                        file.write(texto5)
+                        file.write("\n")
+                        file.write(texto6)
+                        file.write("\n")
+                        for i in self.alumnos_reprobados_2:
+                            file.write(i)
+                            file.write("\n")
+                        file.write(self.df_4)
+                        file.write("\n")
+                        file.write(texto7)
+                        file.write("\n")
+                        file.write(self.df_4)
+                        file.write("\n")
+                        file.write(texto8)
+                        file.write("\n")
+                        file.write(self.df_5)
+                        file.close()
+                    except:
+                        print(f"Se produjo el siguiente error : {sys.exc_info()[0]}")
+                    else:
+                        print("Guardado")
+                    finally:
+                        print("Reedirigiendo al menu")
+                elif desicion == "n" or desicion == "N":
+                    break
+                else:
+                    print("Opcion no valida")
+            
+            while True:
+                print("Desea ir al menu? y/n \n")
+                answer = input()
+                if answer == "y" or answer == "Y":
+                    print("Dirigiendose al menu")
+                    time.sleep(5)
+                    break
+                elif answer == "n" or answer == "N":
+                    continue
+                else:
+                    print("Opcion no valida")
+                
+        except:
+            print(f"Se produjo el siguiente error : {sys.exc_info()[0]}")
+    
+menu=Menu()
