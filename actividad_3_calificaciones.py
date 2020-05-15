@@ -35,7 +35,7 @@ def c_l_Base_de_datos():
             cursor = conn.cursor()
             cursor.execute('''
             CREATE TABLE IF NOT EXISTS alumno ( 
-                matricula INTEGER PRIMARY KEY, nombre TEXT UNIQUE NOT NULL, estado BOOLEAN
+                matricula INTEGER PRIMARY KEY, nombre TEXT NOT NULL, estado BOOLEAN
                 );''')
             cursor.execute('''
             CREATE TABLE IF NOT EXISTS materia  ( 
